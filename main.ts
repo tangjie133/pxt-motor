@@ -137,7 +137,7 @@ namespace motor {
     function initPCA9685(): void {
         i2cWrite(PCA9685_ADDRESS, MODE1, 0x00)
         setFreq(50);
-        initialized = true
+        initialized = true;
     }
 
     function setFreq(freq: number): void {
@@ -146,13 +146,15 @@ namespace motor {
         prescaleval /= 4096;
         prescaleval /= freq;
         prescaleval -= 1;
-        let prescale = prescaleval;//Math.floor(prescaleval + 0.5);
+        let prescale = prescaleval;//prescaleval;//Math.floor(prescaleval + 0.5);
         let oldmode = i2cRead(PCA9685_ADDRESS, MODE1);
-        let newmode = (oldmode & 0x7F) | 0x10; // sleep
+        let newmode = (oldmode&0x7f) | 0x10; // sleep
         i2cWrite(PCA9685_ADDRESS, MODE1, newmode); // go to sleep
-        i2cWrite(PCA9685_ADDRESS, PRESCALE, prescale); // set the prescaler
+        i2cWrite(PCA9685_ADDRESS, PRESCALE, 0x84); // set the prescaler
+        oldmode &= 0xef;
         i2cWrite(PCA9685_ADDRESS, MODE1, oldmode);
         control.waitMicros(5000);
+        //basic.pause(1000)
         i2cWrite(PCA9685_ADDRESS, MODE1, oldmode | 0xa1);
     }
 
